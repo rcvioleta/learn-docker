@@ -7,10 +7,8 @@ const PORT = process.env.PORT ?? 8000
 
 const server = http.createServer(app)
 
-!(async () => {
-  await mongoose.connect('mongodb://host.docker.internal:27071/todos')
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
 
-  server.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
-  })
-})()
+mongoose.connect('mongodb://mongodb-container-v2:27071/todos')
