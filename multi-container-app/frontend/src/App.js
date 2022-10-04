@@ -1,28 +1,65 @@
 import { useEffect, useState } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import logo from './logo.svg';
 
 function App() {
   const [todoInput, setTodoInput] = useState('');
-  const [todos, setTodos] = useState([
-    "Todo 1",
-    "Todo 2",
-    "Todo 3",
-  ]);
+  const [todos, setTodos] = useState([]);
 
   useEffect(() => {
-    // let's fetch todos from our backend!
     console.log('Component did mount')
-    setTodos(todos)
+    fetch('http://localhost:8000/todos')
+      .then(res => res.json())
+      .then(data => setTodos(data))
+      .catch(e => console.log('Failed fetching todos!', e))
 
     return () => {
       console.log('Component did unmount')
     }
-  }, [todos]);
+  }, []);
 
-  const addTodo = () => {
-    setTodos([...todos, todoInput]);
-    setTodoInput("");
+  const addTodo = async () => {
+    try {
+      const req = await fetch('http://localhost:8000/todos', {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: todoInput,
+          description: "Lorem ipsum!"
+        })
+      })
+
+      const newTodo = await req.json()
+      setTodos([...todos, newTodo])
+      setTodoInput('')
+    } catch (e) {
+      console.log('Unable to add new todo!', e)
+    }
+  }
+
+  const deleteTodo = async (todoId) => {
+    try {
+      await fetch(`http://localhost:8000/todos/${todoId}`, {
+        method: 'delete',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        }
+      })
+
+
+      setTodos([...todos, newTodo])
+    } catch (e) {
+      console.log('Unable to delete todo!', e)
+    }
+  }
+
+  const deleteBtnStyle = {
+    textDecoration: 'none',
+    color: 'red'
   }
 
   return (
@@ -34,12 +71,17 @@ function App() {
           <button id="Add-Todo-Button" onClick={addTodo}>Add Todo</button>
         </p>
         <ul id="Todo-List">
-          {todos.map((todo, index) => {
-            return (<li key={index} className="Todo-List-Item">{todo}</li>)
+          {todos.map((todo) => {
+            return (
+              <li key={todo._id} className="Todo-List-Item">
+                {todo.title}&nbsp;&nbsp;
+                <a href='#' style={deleteBtnStyle} onClick={() => deleteTodo(todo._id)}>x</a>
+              </li>
+            )
           })}
         </ul>
       </header>
-    </div>
+    </div >
   );
 }
 
