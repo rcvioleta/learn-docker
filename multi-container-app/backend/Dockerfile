@@ -8,8 +8,9 @@ RUN npm install
 
 COPY . .
 
-ENV PORT 8000
+ENV MONGO_DB_UNAME=rovio
+ENV MONGO_DB_PASS=secret
 
-EXPOSE ${PORT}
+EXPOSE 8000
 
 CMD [ "npm", "start" ]
