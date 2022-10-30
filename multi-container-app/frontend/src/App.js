@@ -77,7 +77,7 @@ function App() {
             onChange={(evt) => setTodoInput(evt.target.value)}
           />
           <button id="Add-Todo-Button" onClick={addTodo}>
-            Add Todo
+            Add Todos
           </button>
         </p>
         <ul id="Todo-List">
